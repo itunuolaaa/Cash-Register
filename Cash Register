@@ -1,0 +1,226 @@
+** start of undefined **
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="styles.css">
+<title>Cash Register App</title>
+</head>
+<body>
+  <h1>Cash Register</h1>
+
+  <label for="cash">Cash provided by customer:</label>
+  <input type="number" id="cash" step="0.01" placeholder="Enter Cash"/>
+
+  <button id="purchase-btn">Purchase</button>
+
+  <p id="change-due"></p>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+** end of undefined **
+
+** start of undefined **
+
+let price = 19.5; // You can change this for testing
+let cid = [
+  ["PENNY", 1.01],
+  ["NICKEL", 2.05],
+  ["DIME", 3.1],
+  ["QUARTER", 4.25],
+  ["ONE", 90],
+  ["FIVE", 55],
+  ["TEN", 20],
+  ["TWENTY", 60],
+  ["ONE HUNDRED", 100]
+];
+
+const currencyUnits = {
+  "PENNY": 0.01,
+  "NICKEL": 0.05,
+  "DIME": 0.1,
+  "QUARTER": 0.25,
+  "ONE": 1,
+  "FIVE": 5,
+  "TEN": 10,
+  "TWENTY": 20,
+  "ONE HUNDRED": 100
+};
+
+document.getElementById("purchase-btn").addEventListener("click", () => {
+  const cash = parseFloat(document.getElementById("cash").value);
+  const changeDueElem = document.getElementById("change-due");
+
+  if (cash < price) {
+    alert("Customer does not have enough money to purchase the item");
+    return;
+  }
+
+  if (cash === price) {
+    changeDueElem.textContent = "No change due - customer paid with exact cash";
+    return;
+  }
+
+  let changeDue = cash - price;
+  let totalCid = cid.reduce((sum, [_, amount]) => sum + amount, 0);
+  totalCid = parseFloat(totalCid.toFixed(2));
+
+  const changeArray = [];
+  let changeRemaining = changeDue;
+
+  const reversedCid = [...cid].reverse();
+
+  for (let [unit, amount] of reversedCid) {
+    let unitValue = currencyUnits[unit];
+    let amountUsed = 0;
+
+    while (changeRemaining >= unitValue && amount > 0) {
+      changeRemaining = parseFloat((changeRemaining - unitValue).toFixed(2));
+      amount = parseFloat((amount - unitValue).toFixed(2));
+      amountUsed += unitValue;
+    }
+
+    if (amountUsed > 0) {
+      changeArray.push([unit, amountUsed]);
+    }
+  }
+
+  const changeGiven = changeArray.reduce((sum, [_, amt]) => sum + amt, 0);
+  changeRemaining = parseFloat(changeRemaining.toFixed(2));
+
+  if (changeRemaining > 0) {
+    changeDueElem.textContent = "Status: INSUFFICIENT_FUNDS";
+    return;
+  }
+
+  if (changeRemaining === 0 && totalCid === changeDue) {
+  const closedChange = changeArray
+    .map(([unit, amt]) => `${unit}: $${amt.toFixed(2)}`)
+    .join(" ");
+  changeDueElem.textContent = `Status: CLOSED ${closedChange}`;
+  return;
+}
+
+  const openChange = changeArray
+    .map(([unit, amt]) => `${unit}: $${amt.toFixed(2)}`)
+    .join(" ");
+  changeDueElem.textContent = `Status: OPEN ${openChange}`;
+});
+
+** end of undefined **
+
+** start of undefined **
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0b3d20, #14532d);
+  color: #f0f4f3;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+h1 {
+  margin-bottom: 30px;
+  color: #cde8d0;
+  font-size: 2.5rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+label {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  display: block;
+  color: #e0f2e9;
+}
+
+input[type="number"] {
+  padding: 10px 15px;
+  border: 2px solid #34d399;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  width: 250px;
+  background-color: #1c4532;
+  color: #f0fdf4;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+input[type="number"]:focus {
+  border-color: #22c55e;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #34d399;
+  color: #0b3d20;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #10b981;
+  transform: translateY(-2px);
+}
+
+#change-due {
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #facc15;
+  background-color: #1f2937;
+  padding: 10px 15px;
+  border-radius: 8px;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.1);
+}
+
+h3 {
+  margin-top: 40px;
+  font-size: 1.4rem;
+  color: #bbf7d0;
+}
+
+ul#drawer-status {
+  list-style-type: none;
+  margin-top: 15px;
+  background-color: #1e3a2f;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+  width: 300px;
+}
+
+ul#drawer-status li {
+  padding: 6px 0;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+ul#drawer-status li:last-child {
+  border-bottom: none;
+}
+
+** end of undefined **
+
